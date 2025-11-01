@@ -132,8 +132,10 @@ public class ChessBoardModel {
             return false;
         }
         for (AbstractPiece piece : getPieces()) {
-            if (piece.canMoveTo(king.getRow(), king.getCol(), this)) {
-                return true;
+            if(piece.isRed() != isGeneraRed) {
+                if (piece.canMoveTo(king.getRow(), king.getCol(), this)) {
+                    return true;
+                }
             }
         }
         return false;
@@ -153,8 +155,8 @@ public class ChessBoardModel {
                 for (Point Move : legalMoves) {
                     int OriginalRow = piece.getRow();
                     int OriginalCol = piece.getCol();
-                    int TargetRow = Move.x;
-                    int TargetCol = Move.y;
+                    int TargetRow = Move.y;
+                    int TargetCol = Move.x;
 
                     piece.moveTo(TargetRow, TargetCol);
                     boolean stillInCheck = isGeneraInCheck(isPlayerRed);
@@ -164,7 +166,6 @@ public class ChessBoardModel {
                     }
                 }
             }
-        return true;
         }
         return true;
     }
