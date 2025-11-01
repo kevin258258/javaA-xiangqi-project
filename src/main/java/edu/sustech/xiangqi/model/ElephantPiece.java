@@ -24,7 +24,7 @@ public class ElephantPiece extends AbstractPiece {
             return 5 <= targetRow && targetRow <= 9;
         }
         else {
-            return 0 <= targetCol && targetCol <= 4;
+            return 0 <= targetRow && targetRow <= 4;
         }
 
     }
