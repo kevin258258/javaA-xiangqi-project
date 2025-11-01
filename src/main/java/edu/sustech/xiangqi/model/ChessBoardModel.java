@@ -4,12 +4,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ChessBoardModel {
+
+
     // 储存棋盘上所有的棋子，要实现吃子的话，直接通过pieces.remove(被吃掉的棋子)删除就可以
     private final List<AbstractPiece> pieces;
     private static final int ROWS = 10;
     private static final int COLS = 9;
     private  boolean isRedTurn = true;
     private boolean isGameOver = false;
+    private String winner;
+
+    //让视图检查是否结束
+    public boolean isGameOver() {
+        return isGameOver;
+    }
+
+    public String getWinner() {
+        return winner;
+    }
 
     public ChessBoardModel() {
         pieces = new ArrayList<>();
@@ -89,8 +101,51 @@ public class ChessBoardModel {
          if (getPieceAt(newRow, newCol) != null) {
              pieces.remove(getPieceAt(newRow, newCol));
          }
+        if (isGameOver) {
+            return false;
+        }
         piece.moveTo(newRow, newCol);
         return true;
+    }
+    //将军检测
+    public  boolean isGeneraInCheck(Boolean isGeneraRed){
+        AbstractPiece king = FindKing(isGeneraRed);
+        if (king == null) {
+            return false;
+        }
+        for (AbstractPiece piece : getPieces()) {
+            if (piece.canMoveTo(king.getRow(), king.getCol(), this)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    //将死检测
+    public Boolean isCheckMate(Boolean isPlayerRed) {
+        AbstractPiece king = FindKing(isPlayerRed);
+        if (king == null) {
+            return false;
+        }
+        if (!isGeneraInCheck(isPlayerRed)) {
+            return false;
+        }
+        for (AbstractPiece piece : getPieces()) {
+            if (piece.isRed() ==  isPlayerRed ){
+                int originalRow = piece.getRow();
+                int originalCol = piece.getCol();
+            }
+
+
+        }
+        return true;
+    }
+
+    private AbstractPiece FindKing(boolean isKingRed){
+        for (AbstractPiece piece : getPieces()) {
+            if (piece instanceof GeneralPiece && piece.isRed() == isKingRed)
+                return piece;
+        }
+        return null;
     }
 
     public static int getRows() {

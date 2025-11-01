@@ -1,4 +1,6 @@
 package edu.sustech.xiangqi.model;
+import java.awt.Point;
+import java.util.List;
 
 /**
  * 兵/卒
@@ -49,5 +51,10 @@ public class SoldierPiece extends AbstractPiece {
                 return rowDiff == 0 && colDiff == 1; // 向左或向右
             }
         }
+    }
+
+    @Override
+    public List<Point> getLegalMoves(ChessBoardModel model) {
+        return List.of();
     }
 }

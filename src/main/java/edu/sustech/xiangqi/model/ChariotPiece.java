@@ -1,4 +1,7 @@
 package edu.sustech.xiangqi.model;
+import java.awt.Point;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ChariotPiece extends AbstractPiece {
 
@@ -33,6 +36,35 @@ public class ChariotPiece extends AbstractPiece {
         }
 
     }
+
+    @Override
+    public List<Point> getLegalMoves(ChessBoardModel model) {
+            List<Point> legalMoves = new ArrayList<>();
+            int r =getRow();
+            int c =getCol();
+            int[][] directions = new int[][]{{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+            for (int[] direction : directions) {
+                for (int i = 1; ; i++) {
+                    int nextRow = r + i * direction[0];
+                    int nextCol = c + i * direction[1];
+                    if (!model.isValidPosition(nextRow, nextCol)) {
+                        break;
+                    }
+
+                    AbstractPiece pieceAtTarget = model.getPieceAt(nextRow, nextCol);
+                    if (pieceAtTarget == null) {
+                        legalMoves.add(new Point(nextRow, nextCol));
+                    }
+                    else  if (pieceAtTarget.isRed() != this.isRed()) {
+                        legalMoves.add(new Point(nextRow, nextCol));
+                        break;
+                    }
+                }
+            }
+            return legalMoves;
+        }
+
+
 
     public ChariotPiece(String name, int row, int col, boolean isRed){
             super(name, row, col, isRed);

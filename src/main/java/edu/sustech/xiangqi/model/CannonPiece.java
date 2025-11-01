@@ -1,4 +1,6 @@
 package edu.sustech.xiangqi.model;
+import java.awt.Point;
+import java.util.List;
 
 public class CannonPiece extends AbstractPiece {
 
@@ -38,6 +40,11 @@ public class CannonPiece extends AbstractPiece {
 
             return piecesInPath == 1;
         }
+    }
+
+    @Override
+    public List<Point> getLegalMoves(ChessBoardModel model) {
+        return List.of();
     }
 
 

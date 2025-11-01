@@ -1,4 +1,6 @@
 package edu.sustech.xiangqi.model;
+import java.awt.Point;
+import java.util.List;
 
 public class ElephantPiece extends AbstractPiece {
     @Override
@@ -27,6 +29,11 @@ public class ElephantPiece extends AbstractPiece {
             return 0 <= targetRow && targetRow <= 4;
         }
 
+    }
+
+    @Override
+    public List<Point> getLegalMoves(ChessBoardModel model) {
+        return List.of();
     }
 
     public ElephantPiece(String name, int row, int col, boolean isRed) {

@@ -1,4 +1,7 @@
 package edu.sustech.xiangqi.model;
+import java.awt.Point;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AdvisorPiece extends AbstractPiece{
     @Override
@@ -32,6 +35,12 @@ public class AdvisorPiece extends AbstractPiece{
 
         return true;
     }
+
+    @Override
+    public List<Point> getLegalMoves(ChessBoardModel model) {
+        return List.of();
+    }
+
 
     public AdvisorPiece(String name, int row, int col, boolean isRed) {
         super(name, row, col, isRed);

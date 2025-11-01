@@ -1,4 +1,6 @@
 package edu.sustech.xiangqi.model;
+import java.awt.Point;
+import java.util.List;
 
 /**
  * 帅/将
@@ -37,5 +39,10 @@ public class GeneralPiece extends AbstractPiece {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public List<Point> getLegalMoves(ChessBoardModel model) {
+        return List.of();
     }
 }
