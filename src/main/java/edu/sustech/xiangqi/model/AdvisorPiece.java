@@ -3,7 +3,19 @@ package edu.sustech.xiangqi.model;
 public class AdvisorPiece extends AbstractPiece{
     @Override
     public boolean canMoveTo(int targetRow, int targetCol, ChessBoardModel model) {
-            int changeX = Math.abs(targetRow - getRow());
+        int currentRow = this.getRow();
+        int currentCol = this.getCol();
+        if (currentRow == targetRow && currentCol == targetCol) {
+            return false;
+        }
+
+        AbstractPiece targetPiece = model.getPieceAt(targetRow, targetCol);
+        if (targetPiece != null && targetPiece.isRed() == this.isRed()) {
+            return false;
+        }
+
+
+        int changeX = Math.abs(targetRow - getRow());
             int changeY = Math.abs(targetCol - getCol());
             if (changeX != 1 || changeY != 1) {
                 return false;

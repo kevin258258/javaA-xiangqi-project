@@ -86,7 +86,9 @@ public class ChessBoardModel {
         if (!piece.canMoveTo(newRow, newCol, this)) {
             return false;
         }
-
+         if (getPieceAt(newRow, newCol) != null) {
+             pieces.remove(getPieceAt(newRow, newCol));
+         }
         piece.moveTo(newRow, newCol);
         return true;
     }
