@@ -78,7 +78,46 @@ public class ChessBoardPanel extends JPanel {
         if (model.isGameOver()) {
             drawGameOverScreen(g2d);
         }
+
+        drawTurnIndicator(g2d);
+
+
+
+        if (model.isGameOver()) {
+            drawGameOverScreen(g2d);
+        }
     }
+
+    /**
+     * 新增一个辅助方法：专门用来绘制当前回合的指示
+     */
+    private void drawTurnIndicator(Graphics2D g) {
+        // 如果游戏结束了，就不再显示回合信息
+        if (model.isGameOver()) {
+            return;
+        }
+
+        String turnText;
+        if (model.isRedTurn()) {
+            g.setColor(new Color(200, 0, 0)); // 设置为红色
+            turnText = "轮到 红方 走棋";
+        } else {
+            g.setColor(Color.BLACK); // 设置为黑色
+            turnText = "轮到 黑方 走棋";
+        }
+
+        g.setFont(new Font("楷体", Font.BOLD, 20));
+
+        // 将文字绘制在棋盘下方或你喜欢的任何位置
+        // 这里我们把它画在棋盘上方
+        FontMetrics fm = g.getFontMetrics();
+        int textWidth = fm.stringWidth(turnText);
+        int x = (getWidth() - textWidth) / 2;
+        int y = MARGIN - 20; // MARGIN 是你的棋盘边距
+
+        g.drawString(turnText, x, y);
+    }
+
 
     //ai写的结束界面，以后替换掉
     private void drawGameOverScreen(Graphics2D g) {

@@ -24,6 +24,10 @@ public class ChessBoardModel {
         return winner;
     }
 
+    public boolean isRedTurn() {
+        return isRedTurn;
+    }
+
     public ChessBoardModel() {
         pieces = new ArrayList<>();
         initializePieces();
@@ -97,6 +101,10 @@ public class ChessBoardModel {
             System.out.println("游戏已结束，无法移动棋子！");
             return false;
         }
+        if (piece.isRed() != isRedTurn) {
+            return false;
+        }
+
         if (!isValidPosition(newRow, newCol)) {
             return false;
         }
