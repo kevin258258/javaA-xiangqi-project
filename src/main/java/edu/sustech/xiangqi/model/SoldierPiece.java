@@ -1,5 +1,6 @@
 package edu.sustech.xiangqi.model;
 import java.awt.Point;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -13,48 +14,48 @@ public class SoldierPiece extends AbstractPiece {
 
     @Override
     public boolean canMoveTo(int targetRow, int targetCol, ChessBoardModel model) {
-        int currentRow = getRow();
-        int currentCol = getCol();
-
-        if (currentRow == targetRow && currentCol == targetCol) {
-            return false;
-        }
-
-        int rowDiff = targetRow - currentRow;
-        int colDiff = Math.abs(targetCol - currentCol);
-
-        // 兵/卒的移动规则：
-        // 1. 未过河前只能向前走一步
-        // 2. 过河后可以向前、向左、向右走一步，但不能后退
-        if (isRed()) {
-            // 红方兵（向上走，row减小）
-            boolean crossedRiver = currentRow < 5; // 过了楚河汉界
-
-            if (!crossedRiver) {
-                // 未过河：只能向前（向上）走一步
-                return rowDiff == -1 && colDiff == 0;
-            } else {
-                // 过河后：可以向前、向左、向右走一步
-                if (rowDiff == -1 && colDiff == 0) return true; // 向前
-                return rowDiff == 0 && colDiff == 1;  // 向左或向右
-            }
-        } else {
-            // 黑方卒（向下走，row增大）
-            boolean crossedRiver = currentRow >= 5; // 过了楚河汉界
-
-            if (!crossedRiver) {
-                // 未过河：只能向前（向下）走一步
-                return rowDiff == 1 && colDiff == 0;
-            } else {
-                // 过河后：可以向前、向左、向右走一步
-                if (rowDiff == 1 && colDiff == 0) return true; // 向前
-                return rowDiff == 0 && colDiff == 1; // 向左或向右
-            }
-        }
+        List<Point> legalMoves = getLegalMoves(model);
+        Point targetPoint = new Point(targetCol, targetRow);
+        return legalMoves.contains(targetPoint);
     }
 
     @Override
     public List<Point> getLegalMoves(ChessBoardModel model) {
-        return List.of();
+        List<Point> moves = new ArrayList<>();
+        int r = getRow();
+        int c = getCol();
+
+        boolean hasCrossedRiver;
+        int forwardRow;
+
+        if (isRed()) {
+            forwardRow = r - 1;
+            hasCrossedRiver = (r <= 4);
+        } else {
+            forwardRow = r + 1;
+            hasCrossedRiver = (r >= 5);
+        }
+
+        checkAndAddMove(forwardRow, c, model, moves);
+
+        if (hasCrossedRiver) {
+            checkAndAddMove(r, c - 1, model, moves); // 向左
+            checkAndAddMove(r, c + 1, model, moves); // 向右
+        }
+
+        return moves;
+    }
+
+    private void checkAndAddMove(int targetRow, int targetCol, ChessBoardModel model, List<Point> moves) {
+        if (!model.isValidPosition(targetRow, targetCol)) {
+            return;
+        }
+
+        AbstractPiece pieceAtTarget = model.getPieceAt(targetRow, targetCol);
+        if (pieceAtTarget != null && pieceAtTarget.isRed() == this.isRed()) {
+            return;
+        }
+
+        moves.add(new Point(targetCol, targetRow));
     }
 }

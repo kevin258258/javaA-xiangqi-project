@@ -1,4 +1,5 @@
 package edu.sustech.xiangqi.model;
+import java.awt.Point;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -90,7 +91,12 @@ public class ChessBoardModel {
         return row >= 0 && row < ROWS && col >= 0 && col < COLS;
     }
 
+    //关于结束提示，之后在写一些gui
     public boolean movePiece(AbstractPiece piece, int newRow, int newCol) {
+        if (isGameOver) {
+            System.out.println("游戏已结束，无法移动棋子！");
+            return false;
+        }
         if (!isValidPosition(newRow, newCol)) {
             return false;
         }
@@ -104,7 +110,19 @@ public class ChessBoardModel {
         if (isGameOver) {
             return false;
         }
+        isRedTurn = !isRedTurn;
         piece.moveTo(newRow, newCol);
+        // 检查轮到走棋的这一方是否已被将死
+        if (isCheckMate(isRedTurn)) {
+            this.isGameOver = true;
+            this.winner = isRedTurn ? "黑方" : "红方";
+
+            System.out.println("游戏结束!。胜利者是: " + this.winner);
+        }
+        else if (isGeneraInCheck(isRedTurn)) {
+            // 顺便处理“将军”的提示
+            System.out.println("将军!");
+        }
         return true;
     }
     //将军检测
@@ -131,16 +149,27 @@ public class ChessBoardModel {
         }
         for (AbstractPiece piece : getPieces()) {
             if (piece.isRed() ==  isPlayerRed ){
-                int originalRow = piece.getRow();
-                int originalCol = piece.getCol();
+                List<Point> legalMoves = piece.getLegalMoves(this);
+                for (Point Move : legalMoves) {
+                    int OriginalRow = piece.getRow();
+                    int OriginalCol = piece.getCol();
+                    int TargetRow = Move.x;
+                    int TargetCol = Move.y;
+
+                    piece.moveTo(TargetRow, TargetCol);
+                    boolean stillInCheck = isGeneraInCheck(isPlayerRed);
+                    piece.moveTo(OriginalRow, OriginalCol);
+                    if (!stillInCheck) {
+                        return false;
+                    }
+                }
             }
-
-
+        return true;
         }
         return true;
     }
 
-    private AbstractPiece FindKing(boolean isKingRed){
+    AbstractPiece FindKing(boolean isKingRed){
         for (AbstractPiece piece : getPieces()) {
             if (piece instanceof GeneralPiece && piece.isRed() == isKingRed)
                 return piece;

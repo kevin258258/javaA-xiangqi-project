@@ -6,39 +6,51 @@ import java.util.List;
 public class AdvisorPiece extends AbstractPiece{
     @Override
     public boolean canMoveTo(int targetRow, int targetCol, ChessBoardModel model) {
-        int currentRow = this.getRow();
-        int currentCol = this.getCol();
-        if (currentRow == targetRow && currentCol == targetCol) {
-            return false;
-        }
+        List<Point> legalMoves = getLegalMoves(model);
 
-        AbstractPiece targetPiece = model.getPieceAt(targetRow, targetCol);
-        if (targetPiece != null && targetPiece.isRed() == this.isRed()) {
-            return false;
-        }
+        Point targetPoint = new Point(targetCol, targetRow);
 
-
-        int changeX = Math.abs(targetRow - getRow());
-            int changeY = Math.abs(targetCol - getCol());
-            if (changeX != 1 || changeY != 1) {
-                return false;
-            }
-            if (isRed()) {
-                if (targetRow < 7 || targetCol < 3 || targetCol > 5) {
-                    return false;
-                }
-                return  true;
-            }
-                if (targetRow > 2 ||  targetCol < 3 || targetCol > 5) {
-                    return false;
-                }
-
-        return true;
+        return legalMoves.contains(targetPoint);
     }
 
     @Override
     public List<Point> getLegalMoves(ChessBoardModel model) {
-        return List.of();
+        List<Point> moves = new ArrayList<>();
+        int r = getRow();
+        int c = getCol();
+
+        // 四个方向
+        int[][] potentialOffsets = {
+                {-1, -1}, {-1, 1},
+                {1, -1},  {1, 1}
+        };
+
+        // 定义九宫格的边界
+        int minRow, maxRow;
+        final int minCol = 3;
+        final int maxCol = 5;
+
+        if (isRed()) {
+            minRow = 7; maxRow = 9;
+        } else {
+            minRow = 0; maxRow = 2;
+        }
+
+        for (int[] offset : potentialOffsets) {
+            int targetRow = r + offset[0];
+            int targetCol = c + offset[1];
+
+            if (targetRow < minRow || targetRow > maxRow || targetCol < minCol || targetCol > maxCol) {
+                continue;
+            }
+            AbstractPiece pieceAtTarget = model.getPieceAt(targetRow, targetCol);
+            if (pieceAtTarget != null && pieceAtTarget.isRed() == this.isRed()) {
+                continue;
+            }
+            moves.add(new Point(targetCol, targetRow));
+        }
+
+        return moves;
     }
 
 

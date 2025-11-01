@@ -75,6 +75,32 @@ public class ChessBoardPanel extends JPanel {
         // 因此绘制GUI的过程中需要自己手动计算每个组件的位置（坐标）
         drawBoard(g2d);
         drawPieces(g2d);
+        if (model.isGameOver()) {
+            drawGameOverScreen(g2d);
+        }
+    }
+
+    //ai写的结束界面，以后替换掉
+    private void drawGameOverScreen(Graphics2D g) {
+        // 1. 绘制一个半透明的黑色遮罩，让棋盘变暗，突出文字
+        g.setColor(new Color(0, 0, 0, 120)); // 最后一个参数 120 是透明度
+        g.fillRect(0, 0, getWidth(), getHeight());
+
+        // 2. 设置文字的颜色和字体
+        g.setColor(Color.WHITE);
+        g.setFont(new Font("楷体", Font.BOLD, 50));
+
+        // 3. 准备要显示的胜利信息
+        String message = model.getWinner() + " 胜利!";
+
+        // 4. 计算文字的位置，使其在面板中居中显示
+        FontMetrics fm = g.getFontMetrics();
+        int textWidth = fm.stringWidth(message);
+        int x = (getWidth() - textWidth) / 2;
+        int y = (getHeight() - fm.getHeight()) / 2 + fm.getAscent();
+
+        // 5. 将文字画在屏幕上
+        g.drawString(message, x, y);
     }
 
     /**
@@ -193,4 +219,7 @@ public class ChessBoardPanel extends JPanel {
         g.drawLine(centerX + cornerSize, centerY + cornerSize,
                 centerX + cornerSize, centerY + cornerSize - lineLength);
     }
+
+
+
 }
