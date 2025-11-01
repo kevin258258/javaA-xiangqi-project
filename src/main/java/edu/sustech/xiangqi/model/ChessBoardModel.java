@@ -113,13 +113,18 @@ public class ChessBoardModel {
             return false;
         }
          if (getPieceAt(newRow, newCol) != null) {
+             if(getPieceAt(newRow, newCol) instanceof GeneralPiece){
+                 this.isGameOver = true;
+                 this.winner = isRedTurn ? "黑方" : "红方";
+                 System.out.println("游戏结束!。胜利者是: " + this.winner);
+             }
              pieces.remove(getPieceAt(newRow, newCol));
          }
+        piece.moveTo(newRow, newCol);
         if (isGameOver) {
             return false;
         }
         isRedTurn = !isRedTurn;
-        piece.moveTo(newRow, newCol);
         // 检查轮到走棋的这一方是否已被将死
         if (isCheckMate(isRedTurn)) {
             this.isGameOver = true;
