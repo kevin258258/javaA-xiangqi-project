@@ -125,7 +125,21 @@ public class ChessBoardModel {
             return false;
         }
         isRedTurn = !isRedTurn;
-        // 检查轮到走棋的这一方是否已被将死
+
+        // 先检查有没有把自己害死
+        if (isCheckMate(!isRedTurn)) {
+            this.isGameOver = true;
+            this.winner = !isRedTurn ? "黑方" : "红方";
+
+            System.out.println("游戏结束!。胜利者是: " + this.winner);
+        }
+        else if (isGeneraInCheck(isRedTurn)) {
+            // 顺便处理“将军”的提示
+            System.out.println("将军!");
+        }
+
+
+        //在检查另一方
         if (isCheckMate(isRedTurn)) {
             this.isGameOver = true;
             this.winner = isRedTurn ? "黑方" : "红方";
@@ -141,9 +155,32 @@ public class ChessBoardModel {
     //将军检测
     public  boolean isGeneraInCheck(Boolean isGeneraRed){
         AbstractPiece king = FindKing(isGeneraRed);
+        AbstractPiece enemyKing = FindKing(!isGeneraRed);
+
         if (king == null) {
             return false;
         }
+
+        if (enemyKing != null && king.getCol() == enemyKing.getCol()) {
+
+            // 如果在同一列，则检查它们之间是否有其他棋子
+            int startRow = Math.min(king.getRow(), enemyKing.getRow()) + 1;
+            int endRow = Math.max(king.getRow(), enemyKing.getRow());
+            boolean hasPieceInBetween = false;
+            for (int r = startRow; r < endRow; r++) {
+                if (getPieceAt(r, king.getCol()) != null) {
+                    hasPieceInBetween = true;
+                    break; // 找到了一个子，就可以停止检查了
+                }
+            }
+
+            // 如果中间没有棋子，则构成“王对王”将军！
+            if (!hasPieceInBetween) {
+                return true;
+            }
+        }
+
+
         for (AbstractPiece piece : getPieces()) {
             if(piece.isRed() != isGeneraRed) {
                 if (piece.canMoveTo(king.getRow(), king.getCol(), this)) {
@@ -151,16 +188,38 @@ public class ChessBoardModel {
                 }
             }
         }
+
         return false;
     }
     //将死检测
     public Boolean isCheckMate(Boolean isPlayerRed) {
         AbstractPiece king = FindKing(isPlayerRed);
+        AbstractPiece enemyKing = FindKing(!isPlayerRed);
+
         if (king == null) {
             return false;
         }
         if (!isGeneraInCheck(isPlayerRed)) {
             return false;
+        }
+        // 检查是否满足王对王的条件
+        if (king != null && enemyKing != null && king.getCol() == enemyKing.getCol()) {
+            boolean hasPieceInBetween = false;
+            int startRow = Math.min(king.getRow(), enemyKing.getRow()) + 1;
+            int endRow = Math.max(king.getRow(), enemyKing.getRow());
+            for (int r = startRow; r < endRow; r++) {
+                if (getPieceAt(r, king.getCol()) != null) {
+                    hasPieceInBetween = true;
+                    break;
+                }
+            }
+
+            // 如果确实是王对王将军（中间无子）
+            if (!hasPieceInBetween) {
+                if (isRedTurn == !isPlayerRed) {
+                    return true;
+                }
+            }
         }
         for (AbstractPiece piece : getPieces()) {
             if (piece.isRed() ==  isPlayerRed ){
