@@ -15,6 +15,19 @@
     </properties>
 
     <dependencies>
+        <!-- JavaFX Controls, 包含了UI控件 -->
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-controls</artifactId>
+            <version>21.0.1</version> <!-- 注意这里的版本号 -->
+        </dependency>
+
+        <!-- JavaFX FXML, 让你能够加载 .fxml 文件 -->
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-fxml</artifactId>
+            <version>21.0.1</version> <!-- 保持和上面版本号一致 -->
+        </dependency>
 <!--        在这里添加第三方库的maven依赖，例如下面的代码导入用来解析json文件的第三方库。-->
 <!--        若需导入其他第三方库需要自己到对应的github repo或者maven central查询对应的dependency-->
 <!--        <dependency>-->
