@@ -115,7 +115,7 @@ public class ChessBoardModel {
          if (getPieceAt(newRow, newCol) != null) {
              if(getPieceAt(newRow, newCol) instanceof GeneralPiece){
                  this.isGameOver = true;
-                 this.winner = isRedTurn ? "黑方" : "红方";
+                 this.winner = isRedTurn ? "红方" : "黑方";
                  System.out.println("游戏结束!。胜利者是: " + this.winner);
              }
              pieces.remove(getPieceAt(newRow, newCol));
