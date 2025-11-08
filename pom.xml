@@ -42,6 +42,19 @@
         </dependency>
 
         <dependency>
+            <groupId>com.github.almasb</groupId>
+            <artifactId>fxgl</artifactId>
+            <version>21.1</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.github.almasb/fxgl-io -->
+        <dependency>
+            <groupId>com.github.almasb</groupId>
+            <artifactId>fxgl-io</artifactId>
+            <version>21.1</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.kordamp.ikonli</groupId>
             <artifactId>ikonli-javafx</artifactId>
             <version>12.3.1</version>
