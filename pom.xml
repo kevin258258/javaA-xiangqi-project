@@ -17,12 +17,6 @@
     <dependencies>
 
         <dependency>
-            <groupId>io.vproxy</groupId>
-            <artifactId>vfx</artifactId>
-            <version>1.4.0</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
             <version>21.0.1</version> <!-- 注意这里的版本号 -->
