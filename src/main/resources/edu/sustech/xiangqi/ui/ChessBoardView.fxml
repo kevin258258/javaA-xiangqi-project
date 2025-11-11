@@ -4,7 +4,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 
 <!-- 在你的根元素中添加 fx:controller 属性 -->
-<AnchorPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="edu.sustech.xiangqi.ui.ChessBoardController">
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="edu.sustech.xiangqi.Control.ChessBoardController">
     <!-- 这里是你的按钮、棋盘等界面元素 -->
 
 </AnchorPane>
