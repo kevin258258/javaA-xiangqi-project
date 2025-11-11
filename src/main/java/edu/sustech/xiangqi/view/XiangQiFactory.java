@@ -13,7 +13,7 @@ import edu.sustech.xiangqi.view.VisualStateComponent;
 import edu.sustech.xiangqi.model.*;
 
 import static com.almasb.fxgl.dsl.FXGL.entityBuilder;
-import static edu.sustech.xiangqi.XiangQiApp.CELL_SIZE;
+import static edu.sustech.xiangqi.XiangQiApp.*;
 
 public class XiangQiFactory implements EntityFactory {
 
@@ -37,11 +37,31 @@ public class XiangQiFactory implements EntityFactory {
 
     @Spawns("board")
     public Entity newBoard(SpawnData data) {
+        // 我们不再缩放棋盘，而是直接加载它
+        // 这样可以保证棋盘网格的线条清晰，不模糊
         return entityBuilder(data)
                 .type(EntityType.BOARD)
-                .view("Board.png") // 使用你的棋盘背景图片
-                // 将棋盘的Z-index设置为-1，确保它永远在所有棋子的最下方
+                .view("Board.png")
                 .zIndex(-1)
+                .build();
+    }
+
+    @Spawns("background")
+    public Entity newBackground(SpawnData data) {
+        // 1. 加载背景图片
+        Texture bgView = FXGL.getAssetLoader().loadTexture("BackGround1.jpg");
+
+
+        // 2. 强制将其尺寸拉伸到和整个窗口一样大
+        bgView.setFitWidth(APP_WIDTH);
+        bgView.setFitHeight(APP_HEIGHT);
+
+        return entityBuilder(data)
+                .type(EntityType.BACKGROUND)
+                .view(bgView)
+                // 3. 【最关键的一步】设置一个比棋盘更低的 zIndex
+                // 棋盘是 -1，所以背景必须是 -2 或更低
+                .zIndex(-2)
                 .build();
     }
 
