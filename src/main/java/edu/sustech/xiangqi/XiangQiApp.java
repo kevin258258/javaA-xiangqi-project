@@ -33,6 +33,24 @@ public  class XiangQiApp extends GameApplication {
     public Text getGameOverBanner() {
         return gameOverBanner;
     }
+    /**
+     * 一个公共的辅助方法，用于将一个 Text 对象在整个应用窗口中居中。
+     * @param text The Text node to be centered.
+     */
+    public void centerTextInApp(Text text) {
+        // 计算文本的宽度和高度
+        double textWidth = text.getLayoutBounds().getWidth();
+        double textHeight = text.getLayoutBounds().getHeight();
+
+        // 计算居中所需的 X 和 Y 坐标
+        double centerX = (APP_WIDTH - textWidth) / 2;
+        // 在Y轴上，我们通常需要向上偏移一点，因为坐标是基于文本基线的
+        double centerY = (APP_HEIGHT - textHeight) / 2 + text.getFont().getSize() * 0.3;
+
+        // 设置文本的位置
+        text.setTranslateX(centerX);
+        text.setTranslateY(centerY);
+    }
 
 
     // --- 核心尺寸常量 (基于你的资源) ---

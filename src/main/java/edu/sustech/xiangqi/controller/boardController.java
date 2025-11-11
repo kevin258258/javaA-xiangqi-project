@@ -1,6 +1,7 @@
 package edu.sustech.xiangqi.controller;
 
 import com.almasb.fxgl.animation.Animation;
+import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import edu.sustech.xiangqi.EntityType;
@@ -20,7 +21,7 @@ import static edu.sustech.xiangqi.XiangQiApp.CELL_SIZE;
 
 public class boardController {
 
-    private  ChessBoardModel model;
+    private ChessBoardModel model;
     private Entity selectedEntity = null;
 
     public boardController(ChessBoardModel model) {
@@ -30,6 +31,7 @@ public class boardController {
 
     /**
      * The main entry point for user interaction, called by InputHandler.
+     *
      * @param row the logical row of the click
      * @param col the logical col of the click
      */
@@ -63,6 +65,7 @@ public class boardController {
 
     /**
      * Handles the logic for selecting a piece.
+     *
      * @param pieceEntity The entity that was clicked.
      */
     private void handleSelection(Entity pieceEntity) {
@@ -86,51 +89,72 @@ public class boardController {
 
     private void handleMove(int targetRow, int targetCol) {
         AbstractPiece pieceToMove = selectedEntity.getComponent(PieceComponent.class).getPieceLogic();
-        Entity entityToMove = this.selectedEntity; // 先把要移动的实体存起来
-
-
+        Entity entityToMove = this.selectedEntity;
         Point2D startPosition = entityToMove.getPosition();
-
-        // 在移动前，检查目标位置是否有棋子
         Entity capturedEntity = findEntityAt(targetRow, targetCol);
 
-        // 尝试在模型中移动
         boolean moveSuccess = model.movePiece(pieceToMove, targetRow, targetCol);
 
         if (moveSuccess) {
-            // --- 视图更新 ---
-
-            // 1. 处理吃子
-            if (capturedEntity != null) {
-                capturedEntity.removeFromWorld();
-            }
-
-            // 2. 计算出最终的视觉位置
-            Point2D targetPosition = XiangQiApp.getVisualPosition(targetRow, targetCol);
-
-            // 3. 【！！！绝对核心的修正！！！】
-            // 在播放动画之前，立刻、强制性地将实体的位置更新到目标点。
-            // 这确保了实体的 Position 属性与它组件内的逻辑棋子的 (row, col) 属性永远同步。
-            entityToMove.setPosition(targetPosition);
-
-            animationBuilder()
-                    .duration(Duration.seconds(0.2))
-                    .translate(entityToMove)
-                    .from(startPosition)  // <-- 从我们记录的旧位置开始
-                    .to(targetPosition)   // <-- 移动到它现在所在的新位置
-                    .buildAndPlay();
-
-
-            // 5. 检查游戏是否结束
-            updateTurnIndicator();
-
-
-            checkGameOver();
-
+            playMoveAndEndGameAnimation(entityToMove, capturedEntity, startPosition, targetRow, targetCol);
         }
 
-        // 无论移动成功与否，都取消选择
         deselectPiece();
+    }
+
+
+    private void playMoveAndEndGameAnimation(Entity entityToMove, Entity capturedEntity, Point2D startPos, int targetRow, int targetCol) {
+        Point2D targetPosition = XiangQiApp.getVisualPosition(targetRow, targetCol);
+        entityToMove.setPosition(targetPosition);
+        boolean willBeGameOver = model.isGameOver();
+
+        animationBuilder()
+                .duration(Duration.seconds(0.2))
+                .translate(entityToMove)
+                .from(startPos)
+                .to(targetPosition)
+                .buildAndPlay();
+
+        // 2. 【关键】与此同时，启动一个一次性的定时器，在动画结束后执行后续操作
+        //    我们给定时器设置的时间比动画稍长一点（例如0.25秒），以确保动画完全播放完毕。
+        runOnce(() -> {
+            // 这里的代码会在 0.25 秒后执行
+            if (willBeGameOver) {
+                if (capturedEntity != null) {
+                    capturedEntity.removeFromWorld();
+                }
+                showGameOverBanner();
+            } else {
+                if (capturedEntity != null) {
+                    capturedEntity.removeFromWorld();
+                }
+                updateTurnIndicator();
+            }
+        }, Duration.seconds(0.25));
+    }
+
+
+
+
+    private void showGameOverBanner() {
+        XiangQiApp app = getAppCast();
+        Text banner = app.getGameOverBanner();
+
+        banner.setText(model.getWinner() + " 胜！");
+        app.centerTextInApp(banner);
+
+        banner.setScaleX(0);
+        banner.setScaleY(0);
+        banner.setVisible(true);
+
+        animationBuilder()
+                .duration(Duration.seconds(0.5))
+                .interpolator(Interpolators.EXPONENTIAL.EASE_OUT())
+                .scale(banner)
+                .to(new Point2D(1.0, 1.0))
+                .buildAndPlay();
+
+        updateTurnIndicator();
     }
 
     /**
