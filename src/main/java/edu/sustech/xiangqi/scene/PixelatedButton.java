@@ -17,11 +17,11 @@ public class PixelatedButton extends Pane {
     private Text text;
     private Runnable action;
 
-    public PixelatedButton(String label, Runnable action) {
+    public PixelatedButton(String label,String imageName, Runnable action) {
         this.action = action;
 
         // 1. 加载按钮背景图片
-        background = new ImageView(FXGL.getAssetLoader().loadTexture("Button.png").getImage());
+        background = new ImageView(FXGL.getAssetLoader().loadTexture(  imageName + ".png").getImage());
 
         // 2. 创建按钮上的文字
         text = new Text(label);
@@ -50,7 +50,7 @@ public class PixelatedButton extends Pane {
         // 鼠标按下时，给按钮一个“按下”的效果
         setOnMousePressed(e -> {
             // 方案A: 如果你有 button_down.png
-            background.setImage(FXGL.getAssetLoader().loadTexture("PressButton.png").getImage());
+            background.setImage(FXGL.getAssetLoader().loadTexture("Press.png").getImage());
 
 
         });
@@ -59,7 +59,7 @@ public class PixelatedButton extends Pane {
         setOnMouseReleased(e -> {
             // 恢复正常外观
             // 方案A:
-            background.setImage(FXGL.getAssetLoader().loadTexture("PressButton.png").getImage());
+            background.setImage(FXGL.getAssetLoader().loadTexture("Button1.png").getImage());
 
 
             // 执行绑定的功能

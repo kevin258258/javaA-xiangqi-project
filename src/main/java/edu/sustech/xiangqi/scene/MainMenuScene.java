@@ -48,19 +48,23 @@ public class MainMenuScene extends FXGLMenu {
         title.setEffect(new DropShadow(15, Color.BLACK));
 
         // --- 3. 创建自定义的像素化按钮 ---
-        var btnNewGame = new PixelatedButton("新的游戏", this::fireNewGame);
-        var btnLoadGame = new PixelatedButton("读取存档", () -> System.out.println("读取存档功能待实现..."));
-        var btnExit = new PixelatedButton("退出游戏", this::fireExit);
+        var btnNewGame = new PixelatedButton("新的游戏", "Button1",this::fireNewGame);
+        var btnLoadGame = new PixelatedButton("读取存档", "Button1",() -> System.out.println("读取存档功能待实现..."));
+        var btnExit = new PixelatedButton("退出游戏","Button1", this::fireExit);
+        var btnOnline = new PixelatedButton("联网对战", "Button1", () -> {
+            System.out.println("联网对战功能待实现...");
+            // 在这里切换到联机大厅场景
+        });
 
         // --- 4. 整体布局 ---
         var titleBox = new VBox(title);
         titleBox.setAlignment(Pos.CENTER);
-        var menuBox = new VBox(15, btnNewGame, btnLoadGame, btnExit);
+        var menuBox = new VBox(15, btnNewGame, btnLoadGame, btnOnline,btnExit);
         menuBox.setAlignment(Pos.CENTER);
         var mainLayout = new VBox(50, titleBox, menuBox);
         mainLayout.setAlignment(Pos.CENTER);
         mainLayout.setTranslateX((getAppWidth() - mainLayout.getBoundsInLocal().getWidth()) / 2);
-        mainLayout.setTranslateY((getAppHeight() - mainLayout.getBoundsInLocal().getHeight()) / 2 - 100);
+        mainLayout.setTranslateY((getAppHeight() - mainLayout.getBoundsInLocal().getHeight()) / 2 - 300);
 
         // --- 5. 将所有元素添加到场景中 ---
         getContentRoot().getChildren().addAll(rect, mainLayout);

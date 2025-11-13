@@ -1,8 +1,9 @@
 package edu.sustech.xiangqi;
 
+import edu.sustech.xiangqi.scene.*;
+import edu.sustech.xiangqi.scene.PixelatedButton;
 import com.almasb.fxgl.app.scene.FXGLMenu;
 import com.almasb.fxgl.app.scene.SceneFactory;
-import edu.sustech.xiangqi.scene.MainMenuScene; // 确保导入我们自己的菜单场景
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.entity.SpawnData;
@@ -31,7 +32,7 @@ public  class XiangQiApp extends GameApplication {
     //文本提示
     private Text checkText;
     private Text gameOverBanner;
-    private Text turnIndicatorText;
+    private TurnIndicator  turnIndicator;
 
     public Text getGameOverBanner() {
         return gameOverBanner;
@@ -69,7 +70,7 @@ public  class XiangQiApp extends GameApplication {
     // --- 根据上面常量自动计算的尺寸 ---
 // 棋盘图片本身的尺寸
     public static final int BOARD_WIDTH = 796;
-    public static final int BOARD_HEIGHT = 900;
+    public static final int BOARD_HEIGHT = 887;
 
     // 最终窗口的总尺寸
     public static final int APP_WIDTH = BOARD_WIDTH + UI_GAP + UI_WIDTH + HORIZONTAL_PADDING  * 2;
@@ -121,6 +122,10 @@ public  class XiangQiApp extends GameApplication {
                 // 当FXGL需要主菜单时，返回我们自己创建的 MainMenuScene 实例
                 return new MainMenuScene();
             }
+            @Override
+            public FXGLMenu newGameMenu() {
+                return new InGameMenuScene();
+            }
         });
 
     }
@@ -162,21 +167,28 @@ public  class XiangQiApp extends GameApplication {
         this.inputHandler = new InputHandler(this.boardController);
 
 
+
     }
+
 
 
 
     @Override
     protected void initUI() {
         // 创建按钮
-        Button btnUndo = new Button("悔棋");
-        btnUndo.setOnAction(e -> System.out.println("悔棋按钮被点击！"));
-
-        Button btnSurrender = new Button("投降");
-        btnSurrender.setOnAction(e -> System.out.println("投降按钮被点击！"));
+        var btnUndo = new PixelatedButton("悔棋", "Button1", () -> System.out.println("悔棋..."));
+        var btnSurrender = new PixelatedButton("投降", "Button1", () -> System.out.println("投降..."));
+        var btnAIHint = new PixelatedButton("AI提示", "Button1", () -> {
+            System.out.println("AI提示...");
+            // 在这里调用 AI 分析并高亮最佳走法
+        });
+        var btnHistory = new PixelatedButton("历史记录", "Button1", () -> {
+            // 【关键】直接调用内置方法打开游戏菜单
+            getGameController().gotoGameMenu();
+        });
 
         // 使用 VBox 垂直排列按钮
-        VBox buttons = new VBox(10, btnUndo, btnSurrender);
+        VBox buttons = new VBox(10, btnUndo, btnSurrender,btnAIHint,btnHistory);
         buttons.setPrefWidth(150); // 给VBox一个宽度
 
         // 将按钮组合放置在右侧的UI区域
@@ -185,13 +197,8 @@ public  class XiangQiApp extends GameApplication {
 
         // --- 新增回合指示器 ---
         // 1. 创建 Text 对象并设置样式
-        turnIndicatorText = new Text("轮到 红方");
-        turnIndicatorText.setFont(Font.font("楷体", 24));
-        turnIndicatorText.setFill(Color.RED); // 初始为红色
-
-        // 2. 将它放置在按钮下方
-        // Y 坐标 = 按钮的 Y + 按钮的高度 (估算) + 间距
-        addUINode(turnIndicatorText, uiX, 200);
+        turnIndicator = new TurnIndicator();
+        addUINode(turnIndicator, uiX, 750);
 
 
         // --- 【新增代码】创建游戏结束报幕 ---
@@ -210,14 +217,17 @@ public  class XiangQiApp extends GameApplication {
     }
 
 
-    public Text getTurnIndicatorText() {
-        return turnIndicatorText;
+    public TurnIndicator getTurnIndicator() {
+        return turnIndicator;
     }
 
 
     @Override
     protected void initInput() {
         // 【新增】在 Controller 创建后，手动调用一次更新来设置初始状态
+
+
+
 
         // 1. 获取FXGL的输入服务
         Input input = getInput();

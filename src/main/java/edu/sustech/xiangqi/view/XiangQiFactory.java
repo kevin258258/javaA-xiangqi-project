@@ -41,7 +41,7 @@ public class XiangQiFactory implements EntityFactory {
         // 这样可以保证棋盘网格的线条清晰，不模糊
         return entityBuilder(data)
                 .type(EntityType.BOARD)
-                .view("Board.png")
+                .view("ChessBoard.png")
                 .zIndex(-1)
                 .build();
     }

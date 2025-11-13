@@ -161,19 +161,12 @@ public class boardController {
      * 【新增】更新回合指示器文本和颜色的方法
      */
     public void updateTurnIndicator() {
-        // 通过 FXGL.getAppCast() 获取到主程序实例，然后调用 getter
-        Text indicator = ((XiangQiApp) FXGL.getApp()).getTurnIndicatorText();
+        // 1. 获取主 App 实例和我们的 TurnIndicator 组件
+        XiangQiApp app = getAppCast();
+        var indicator = app.getTurnIndicator();
 
-        if (model.isGameOver()) {
-            indicator.setText("游戏结束");
-            indicator.setFill(Color.GRAY);
-        } else if (model.isRedTurn()) {
-            indicator.setText("轮到 红方");
-            indicator.setFill(Color.RED);
-        } else {
-            indicator.setText("轮到 黑方");
-            indicator.setFill(Color.BLACK);
-        }
+        // 2. 调用组件的 update 方法，传入当前状态
+        indicator.update(model.isRedTurn(), model.isGameOver());
     }
 
     /**
