@@ -1,5 +1,8 @@
 package edu.sustech.xiangqi;
 
+import com.almasb.fxgl.app.scene.FXGLMenu;
+import com.almasb.fxgl.app.scene.SceneFactory;
+import edu.sustech.xiangqi.scene.MainMenuScene; // 确保导入我们自己的菜单场景
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.entity.SpawnData;
@@ -66,7 +69,7 @@ public  class XiangQiApp extends GameApplication {
     // --- 根据上面常量自动计算的尺寸 ---
 // 棋盘图片本身的尺寸
     public static final int BOARD_WIDTH = 796;
-    public static final int BOARD_HEIGHT = 887;
+    public static final int BOARD_HEIGHT = 900;
 
     // 最终窗口的总尺寸
     public static final int APP_WIDTH = BOARD_WIDTH + UI_GAP + UI_WIDTH + HORIZONTAL_PADDING  * 2;
@@ -106,6 +109,20 @@ public  class XiangQiApp extends GameApplication {
         settings.setVersion("1.0");
         settings.setWidth(APP_WIDTH);
         settings.setHeight(APP_HEIGHT);
+
+        // --- 【关键配置】 ---
+        // 1. 启用主菜单功能
+        settings.setMainMenuEnabled(true);
+
+        // 2. 设置我们自定义的场景工厂
+        settings.setSceneFactory(new SceneFactory() {
+            @Override
+            public FXGLMenu newMainMenu() {
+                // 当FXGL需要主菜单时，返回我们自己创建的 MainMenuScene 实例
+                return new MainMenuScene();
+            }
+        });
+
     }
 
     @Override
@@ -144,7 +161,6 @@ public  class XiangQiApp extends GameApplication {
         this.boardController = new boardController(this.model);
         this.inputHandler = new InputHandler(this.boardController);
 
-        // 5. 初始化所有棋子的视觉状态 (例如，让黑棋先变暗)
 
     }
 

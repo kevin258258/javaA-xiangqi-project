@@ -49,7 +49,7 @@ public class XiangQiFactory implements EntityFactory {
     @Spawns("background")
     public Entity newBackground(SpawnData data) {
         // 1. 加载背景图片
-        Texture bgView = FXGL.getAssetLoader().loadTexture("BackGround1.jpg");
+        Texture bgView = FXGL.getAssetLoader().loadTexture("背景.jpg");
 
 
         // 2. 强制将其尺寸拉伸到和整个窗口一样大
