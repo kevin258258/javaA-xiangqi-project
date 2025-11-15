@@ -267,5 +267,9 @@ public  class XiangQiApp extends GameApplication {
     public static void main(String[] args) {
         launch(args);
     }
+
+    public ChessBoardModel getModel() {
+        return model;
     }
+}
 

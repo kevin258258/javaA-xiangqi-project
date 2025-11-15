@@ -22,4 +22,11 @@ public class MoveCommand {
     public int getStartRow() { return startRow; }
     public int getStartCol() { return startCol; }
     public AbstractPiece getCapturedPiece() { return capturedPiece; }
+    public int getEndRow() {
+        return endRow;
+    }
+
+    public int getEndCol() {
+        return endCol;
+    }
 }

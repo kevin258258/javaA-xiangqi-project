@@ -4,6 +4,8 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack; // 需要 import
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 
 public class ChessBoardModel {
@@ -17,6 +19,8 @@ public class ChessBoardModel {
     private boolean isGameOver = false;
     private String winner;
     private final Stack<MoveCommand> moveHistory = new Stack<>();
+    private final ObservableList<String> moveHistoryStrings = FXCollections.observableArrayList();
+
 
 
     //让视图检查是否结束
@@ -160,6 +164,8 @@ public class ChessBoardModel {
             System.out.println("将军!");
         }
         moveHistory.push(command);
+        updateHistoryStrings();
+
         return true;
     }
 
@@ -198,6 +204,8 @@ public class ChessBoardModel {
         }
 
         System.out.println("Undo successful!");
+        updateHistoryStrings();
+
         return true;
     }
     //将军检测
@@ -306,6 +314,46 @@ public class ChessBoardModel {
         this.isGameOver = true;
         this.winner = winnerName;
     }
+
+
+
+
+    private String formatMove(MoveCommand command, int moveNumber) {
+        String pieceName = command.getMovedPiece().getName();
+        // 中文棋谱列是从右到左数的（对红方而言）
+        String startColStr = formatCol(command.getStartCol(), command.getMovedPiece().isRed());
+        String endColStr = formatCol(command.getEndCol(), command.getMovedPiece().isRed());
+
+        // 这是一个非常简化的表示法，例如 "炮 (8) -> (5)"
+        // 完整的棋谱表示法（如“炮二平五”）非常复杂，暂时先用简化的
+        String simpleNotation = String.format("%d. %s: (%d, %s) -> (%d, %s)",
+                moveNumber,
+                pieceName,
+                command.getStartRow(), startColStr,
+                command.getEndRow(), endColStr
+        );
+
+        return simpleNotation;
+    }
+
+    private String formatCol(int col, boolean isRed) {
+        // 简单的数字转换
+        String[] redNums = {"九", "八", "七", "六", "五", "四", "三", "二", "一"};
+        String[] blackNums = {"1", "2", "3", "4", "5", "6", "7", "8", "9"};
+        return isRed ? redNums[col] : blackNums[col];
+    }
+
+    private void updateHistoryStrings() {
+        moveHistoryStrings.clear();
+        for (int i = 0; i < moveHistory.size(); i++) {
+            moveHistoryStrings.add(formatMove(moveHistory.get(i), (i / 2) + 1));
+        }
+    }
+
+    public ObservableList<String> getMoveHistoryAsObservableList() {
+        return moveHistoryStrings;
+    }
+
 
     public static int getRows() {
         return ROWS;
