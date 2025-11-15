@@ -4,6 +4,7 @@ import com.almasb.fxgl.animation.Animation;
 import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.SpawnData;
 import edu.sustech.xiangqi.EntityType;
 import edu.sustech.xiangqi.XiangQiApp;
 import edu.sustech.xiangqi.view.PieceComponent;
@@ -238,5 +239,31 @@ public class boardController {
                 .filter(e -> e.isType(EntityType.PIECE))
                 .findFirst()
                 .orElse(null);
+    }
+
+    /**
+     * 【新增】处理悔棋请求的公共方法
+     */
+    public void undo() {
+        boolean undoSuccess = model.undoMove();
+
+        if (undoSuccess) {
+            getGameWorld().getEntitiesByType(EntityType.PIECE).forEach(Entity::removeFromWorld);
+
+            for (AbstractPiece pieceLogic : model.getPieces()) {
+
+                // --- 【这里是构建 ID 的具体代码】 ---
+                String colorPrefix = pieceLogic.isRed() ? "Red" : "Black";
+                String pieceTypeName = pieceLogic.getClass().getSimpleName().replace("Piece", "");
+                String entityID = colorPrefix + pieceTypeName;
+                // ------------------------------------
+
+                Point2D visualPos = XiangQiApp.getVisualPosition(pieceLogic.getRow(), pieceLogic.getCol());
+                spawn(entityID, new SpawnData(visualPos).put("pieceLogic", pieceLogic));
+            }
+
+            updateTurnIndicator();
+            deselectPiece();
+        }
     }
 }

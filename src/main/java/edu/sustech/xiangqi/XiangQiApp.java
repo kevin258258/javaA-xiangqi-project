@@ -179,8 +179,11 @@ public  class XiangQiApp extends GameApplication {
     @Override
     protected void initUI() {
         // 创建按钮
-        var btnUndo = new PixelatedButton("悔棋", "Button1", () -> System.out.println("悔棋..."));
-        var btnSurrender = new PixelatedButton("投降", "Button1", () -> {
+        var btnUndo = new PixelatedButton("悔棋", "Button1", () -> {
+            if (boardController != null) {
+                boardController.undo();
+            }
+        });        var btnSurrender = new PixelatedButton("投降", "Button1", () -> {
             // 直接调用 boardController 的 surrender 方法
             if (boardController != null) {
                 boardController.surrender();

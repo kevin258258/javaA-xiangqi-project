@@ -3,6 +3,8 @@ import java.awt.Point;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack; // 需要 import
+
 
 public class ChessBoardModel {
 
@@ -14,6 +16,8 @@ public class ChessBoardModel {
     private  boolean isRedTurn = true;
     private boolean isGameOver = false;
     private String winner;
+    private final Stack<MoveCommand> moveHistory = new Stack<>();
+
 
     //让视图检查是否结束
     public boolean isGameOver() {
@@ -97,6 +101,7 @@ public class ChessBoardModel {
 
     //关于结束提示，之后在写一些gui
     public boolean movePiece(AbstractPiece piece, int newRow, int newCol) {
+
         if (isGameOver) {
             return false;
         }
@@ -111,7 +116,11 @@ public class ChessBoardModel {
         if (!piece.canMoveTo(newRow, newCol, this)) {
             return false;
         }
-         if (getPieceAt(newRow, newCol) != null) {
+        AbstractPiece targetPiece = getPieceAt(newRow, newCol);
+        MoveCommand command = new MoveCommand(piece, newRow, newCol, targetPiece);
+
+
+        if (getPieceAt(newRow, newCol) != null) {
              if(getPieceAt(newRow, newCol) instanceof GeneralPiece){
                  this.isGameOver = true;
                  this.winner = isRedTurn ? "红方" : "黑方";
@@ -150,6 +159,45 @@ public class ChessBoardModel {
             // 顺便处理“将军”的提示
             System.out.println("将军!");
         }
+        moveHistory.push(command);
+        return true;
+    }
+
+    /**
+     * 【新增】悔棋方法
+     * @return true 如果悔棋成功, false 如果没有棋可悔
+     */
+    public boolean undoMove() {
+        if (moveHistory.isEmpty()) {
+            System.out.println("No moves to undo!");
+            return false;
+        }
+
+        // 1. 从历史记录中弹出上一步的命令
+        MoveCommand lastMove = moveHistory.pop();
+
+        // 2. 执行逆向操作
+        // a. 将移动的棋子移回原位
+        AbstractPiece pieceToUndo = lastMove.getMovedPiece();
+        pieceToUndo.moveTo(lastMove.getStartRow(), lastMove.getStartCol());
+
+        // b. 如果上一步有吃子，将被吃的棋子“复活”并放回棋盘
+        AbstractPiece capturedPiece = lastMove.getCapturedPiece();
+        if (capturedPiece != null) {
+            pieces.add(capturedPiece);
+        }
+
+        // 3. 切换回上一回合
+        isRedTurn = !isRedTurn;
+
+        // 4. (重要) 撤销游戏结束状态
+        // 如果上一步导致了游戏结束，悔棋后游戏应该继续
+        if (isGameOver) {
+            isGameOver = false;
+            winner = null;
+        }
+
+        System.out.println("Undo successful!");
         return true;
     }
     //将军检测
