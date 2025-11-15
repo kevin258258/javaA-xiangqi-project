@@ -2,10 +2,20 @@ package edu.sustech.xiangqi.scene;
 
 import com.almasb.fxgl.app.scene.FXGLMenu;
 import com.almasb.fxgl.app.scene.MenuType; // 需要 import MenuType
+import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.dsl.FXGL;
+import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.particle.ParticleComponent;
+import com.almasb.fxgl.particle.ParticleEmitter;
 import javafx.animation.FillTransition;
+import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.effect.BlendMode;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
@@ -18,10 +28,13 @@ import javafx.scene.text.Text;
 import javafx.util.Duration;
 
 import java.util.List;
+import java.util.Random;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
 
 public class MainMenuScene extends FXGLMenu {
+    private static final Random random = new Random();
+    private Point2D lastSpawnPoint;
 
     public MainMenuScene() {
         // 【关键修正】调用父类的构造函数，并指明这是一个主菜单
@@ -30,7 +43,7 @@ public class MainMenuScene extends FXGLMenu {
         // --- 1. 背景 ---
         var bgStops = List.of(new Stop(0, Color.web("#D3B08C")), new Stop(1, Color.web("#4A2C12")));
         var bgGradient = new RadialGradient(0.5, 0.5, 0.5, 0.5, 1, true, CycleMethod.NO_CYCLE, bgStops);
-        getContentRoot().setBackground(new javafx.scene.layout.Background(new javafx.scene.layout.BackgroundFill(bgGradient, null, null)));
+        getContentRoot().setBackground(new Background(new BackgroundFill(bgGradient, null, null)));
 
         var rect = new Rectangle(getAppWidth(), getAppHeight(), Color.web("000", 0.0));
         rect.setMouseTransparent(true);
@@ -39,9 +52,13 @@ public class MainMenuScene extends FXGLMenu {
         ft.setAutoReverse(true);
         ft.play();
 
+
+
+
+
         // --- 2. 游戏标题 ---
         var title = new Text("中国象棋");
-        title.setFont(FXGL.getAssetLoader().loadFont("HYPixel11pxU-2.ttf").newFont(120));
+        title.setFont(getAssetLoader().loadFont("HYPixel11pxU-2.ttf").newFont(120));
         title.setFill(Color.web("#F0E68C"));
         title.setStroke(Color.web("#5C3A1A"));
         title.setStrokeWidth(3);
@@ -69,4 +86,6 @@ public class MainMenuScene extends FXGLMenu {
         // --- 5. 将所有元素添加到场景中 ---
         getContentRoot().getChildren().addAll(rect, mainLayout);
     }
+
+
 }

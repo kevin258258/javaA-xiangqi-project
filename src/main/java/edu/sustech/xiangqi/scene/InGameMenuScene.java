@@ -24,7 +24,7 @@ public class InGameMenuScene extends FXGLMenu {
         var bg = new Rectangle(getAppWidth(), getAppHeight(), Color.web("000", 0.7));
 
         // 2. 创建历史记录面板
-        var title = new Text("历史记录");
+        var title = new Text("菜单/历史记录");
         title.setFill(Color.WHITE);
         // ... (设置字体)
 

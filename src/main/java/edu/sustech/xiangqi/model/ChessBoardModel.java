@@ -98,7 +98,6 @@ public class ChessBoardModel {
     //关于结束提示，之后在写一些gui
     public boolean movePiece(AbstractPiece piece, int newRow, int newCol) {
         if (isGameOver) {
-            System.out.println("游戏已结束，无法移动棋子！");
             return false;
         }
         if (piece.isRed() != isRedTurn) {
@@ -115,8 +114,10 @@ public class ChessBoardModel {
          if (getPieceAt(newRow, newCol) != null) {
              if(getPieceAt(newRow, newCol) instanceof GeneralPiece){
                  this.isGameOver = true;
-                 this.winner = isRedTurn ? "黑方" : "红方";
-                 System.out.println("游戏结束!。胜利者是: " + this.winner);
+                 this.winner = isRedTurn ? "红方" : "黑方";
+                 pieces.remove(getPieceAt(newRow, newCol));
+                 piece.moveTo(newRow, newCol);
+                 return true;
              }
              pieces.remove(getPieceAt(newRow, newCol));
          }
@@ -131,7 +132,6 @@ public class ChessBoardModel {
             this.isGameOver = true;
             this.winner = !isRedTurn ? "黑方" : "红方";
 
-            System.out.println("游戏结束!。胜利者是: " + this.winner);
         }
         else if (isGeneraInCheck(isRedTurn)) {
             // 顺便处理“将军”的提示
@@ -248,6 +248,15 @@ public class ChessBoardModel {
                 return piece;
         }
         return null;
+    }
+
+    /**
+     * 【新增】一个公共方法，用于从外部强制结束游戏并设置胜利者
+     * @param winnerName "红方" 或 "黑方"
+     */
+    public void endGame(String winnerName) {
+        this.isGameOver = true;
+        this.winner = winnerName;
     }
 
     public static int getRows() {

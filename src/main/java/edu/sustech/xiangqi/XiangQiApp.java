@@ -20,6 +20,7 @@ import javafx.scene.control.Button;
 import com.almasb.fxgl.input.Input;
 import com.almasb.fxgl.input.UserAction;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
@@ -32,11 +33,13 @@ public  class XiangQiApp extends GameApplication {
     //文本提示
     private Text checkText;
     private Text gameOverBanner;
+    private Rectangle gameOverDimmingRect; // 新增遮罩
     private TurnIndicator  turnIndicator;
 
-    public Text getGameOverBanner() {
-        return gameOverBanner;
-    }
+    public Text getGameOverBanner() { return gameOverBanner; }
+    public Rectangle getGameOverDimmingRect() { return gameOverDimmingRect; }
+
+
     /**
      * 一个公共的辅助方法，用于将一个 Text 对象在整个应用窗口中居中。
      * @param text The Text node to be centered.
@@ -177,7 +180,12 @@ public  class XiangQiApp extends GameApplication {
     protected void initUI() {
         // 创建按钮
         var btnUndo = new PixelatedButton("悔棋", "Button1", () -> System.out.println("悔棋..."));
-        var btnSurrender = new PixelatedButton("投降", "Button1", () -> System.out.println("投降..."));
+        var btnSurrender = new PixelatedButton("投降", "Button1", () -> {
+            // 直接调用 boardController 的 surrender 方法
+            if (boardController != null) {
+                boardController.surrender();
+            }
+        });
         var btnAIHint = new PixelatedButton("AI提示", "Button1", () -> {
             System.out.println("AI提示...");
             // 在这里调用 AI 分析并高亮最佳走法
@@ -186,6 +194,9 @@ public  class XiangQiApp extends GameApplication {
             // 【关键】直接调用内置方法打开游戏菜单
             getGameController().gotoGameMenu();
         });
+
+
+
 
         // 使用 VBox 垂直排列按钮
         VBox buttons = new VBox(10, btnUndo, btnSurrender,btnAIHint,btnHistory);
@@ -200,11 +211,13 @@ public  class XiangQiApp extends GameApplication {
         turnIndicator = new TurnIndicator();
         addUINode(turnIndicator, uiX, 750);
 
-
+        gameOverDimmingRect = new Rectangle(APP_WIDTH, APP_HEIGHT, Color.web("000", 0.0));
+        gameOverDimmingRect.setVisible(false); // 默认不可见
+        gameOverDimmingRect.setMouseTransparent(true); // 不拦截鼠标
         // --- 【新增代码】创建游戏结束报幕 ---
         gameOverBanner = new Text(); // 初始内容为空
-        gameOverBanner.setFont(Font.font("楷体", FontWeight.BOLD, 100));
-        gameOverBanner.setFill(Color.GOLD);
+        gameOverBanner.setFont(Font.font("MNewsMPro-Light.ttf", FontWeight.BOLD, 100));
+        gameOverBanner.setFill(Color.BROWN);
         gameOverBanner.setStroke(Color.BLACK);
         gameOverBanner.setStrokeWidth(3);
         gameOverBanner.setEffect(new DropShadow(15, Color.BLACK));
@@ -213,6 +226,7 @@ public  class XiangQiApp extends GameApplication {
         gameOverBanner.setVisible(false);
 
         // 添加到UI层
+        addUINode(gameOverDimmingRect);
         addUINode(gameOverBanner);
     }
 

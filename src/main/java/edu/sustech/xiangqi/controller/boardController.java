@@ -13,6 +13,7 @@ import edu.sustech.xiangqi.model.ChessBoardModel;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
@@ -23,6 +24,8 @@ public class boardController {
 
     private ChessBoardModel model;
     private Entity selectedEntity = null;
+
+
 
     public boardController(ChessBoardModel model) {
         this.model = model;
@@ -139,21 +142,34 @@ public class boardController {
     private void showGameOverBanner() {
         XiangQiApp app = getAppCast();
         Text banner = app.getGameOverBanner();
+        Rectangle dimmingRect = app.getGameOverDimmingRect();
 
+        // 1. 准备报幕文字内容
         banner.setText(model.getWinner() + " 胜！");
         app.centerTextInApp(banner);
 
-        banner.setScaleX(0);
-        banner.setScaleY(0);
-        banner.setVisible(true);
+        // 2. 【新增】播放全场变暗的动画
+        dimmingRect.setVisible(true);
+        // 3. 【关键】使用 runOnce 定时器，在变暗动画结束后执行下一阶段
+        runOnce(() -> {
+            // 这段代码将在 0.5 秒后执行
 
-        animationBuilder()
-                .duration(Duration.seconds(0.5))
-                .interpolator(Interpolators.EXPONENTIAL.EASE_OUT())
-                .scale(banner)
-                .to(new Point2D(1.0, 1.0))
-                .buildAndPlay();
+            // a. 准备报幕文字的初始状态
+            banner.setScaleX(0);
+            banner.setScaleY(0);
+            banner.setVisible(true);
 
+            // b. 播放报幕文字的出现动画
+            animationBuilder()
+                    .duration(Duration.seconds(0.5))
+                    .interpolator(Interpolators.EXPONENTIAL.EASE_OUT())
+                    .scale(banner)
+                    .to(new Point2D(1.0, 1.0))
+                    .buildAndPlay(); // 干净地调用
+
+        }, Duration.seconds(0.5)); // 定时器的延迟时间和第一段动画的时长完全一样
+
+        // 4. 更新回合指示器为“游戏结束”
         updateTurnIndicator();
     }
 
@@ -167,6 +183,23 @@ public class boardController {
 
         // 2. 调用组件的 update 方法，传入当前状态
         indicator.update(model.isRedTurn(), model.isGameOver());
+    }
+
+    /**
+     * 【新增】处理玩家投降的逻辑
+     */
+    public void surrender() {
+        // 如果游戏已经结束，就什么都不做
+        if (model.isGameOver()) {
+            return;
+        }
+
+        // 1. 在模型中设置游戏结束状态
+        // 投降的是当前回合方，所以胜利者是对方
+        model.endGame(model.isRedTurn() ? "黑方" : "红方");
+
+        // 2. 显示酷炫的胜利报幕
+        showGameOverBanner();
     }
 
     /**
