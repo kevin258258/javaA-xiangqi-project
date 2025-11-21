@@ -5,8 +5,7 @@ import javafx.scene.effect.ColorAdjust;
 import javafx.scene.effect.Effect;
 
 /**
- * Manages the visual state of a piece, such as being darkened or highlighted.
- * This is achieved by applying a JavaFX Effect to the entity's view.
+ 控制棋子颜色
  */
 public class VisualStateComponent extends Component {
 

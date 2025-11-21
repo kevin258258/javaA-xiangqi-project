@@ -51,7 +51,7 @@ public class PixelatedButton extends Pane {
         setOnMousePressed(e -> {
             // 方案A: 如果你有 button_down.png
             background.setImage(FXGL.getAssetLoader().loadTexture("Press.png").getImage());
-
+            FXGL.play("按钮音效1.mp3");
 
         });
 

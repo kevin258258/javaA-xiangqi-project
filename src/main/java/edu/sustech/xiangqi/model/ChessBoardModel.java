@@ -344,11 +344,24 @@ public class ChessBoardModel {
     }
 
     private void updateHistoryStrings() {
-        moveHistoryStrings.clear();
+        moveHistoryStrings.clear(); // 先清空
+
+        // 遍历栈中的每一步
         for (int i = 0; i < moveHistory.size(); i++) {
-            moveHistoryStrings.add(formatMove(moveHistory.get(i), (i / 2) + 1));
+            MoveCommand cmd = moveHistory.get(i);
+            // 生成类似 "1. 红方 车: (9,0) -> (8,0)" 的简单格式
+            // 暂时先不用复杂的中文棋谱，先把流程跑通
+            String record = String.format("第%d步: %s %s (%d,%d) -> (%d,%d)",
+                    i + 1,
+                    cmd.getMovedPiece().isRed() ? "红" : "黑",
+                    cmd.getMovedPiece().getName(),
+                    cmd.getStartRow(), cmd.getStartCol(),
+                    cmd.getEndRow(), cmd.getEndCol()
+            );
+            moveHistoryStrings.add(record);
         }
     }
+
 
     public ObservableList<String> getMoveHistoryAsObservableList() {
         return moveHistoryStrings;
