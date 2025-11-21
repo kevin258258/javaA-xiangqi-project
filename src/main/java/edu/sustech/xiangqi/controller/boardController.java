@@ -13,10 +13,15 @@ import edu.sustech.xiangqi.model.AbstractPiece;
 import edu.sustech.xiangqi.model.ChessBoardModel;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.effect.Light;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
+
+
+import java.awt.*;
+import java.util.List;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
 import static edu.sustech.xiangqi.XiangQiApp.CELL_SIZE;
@@ -52,6 +57,7 @@ public class boardController {
             // If the player clicks the same piece again, deselect it.
             if (clickedEntity == selectedEntity) {
                 deselectPiece();
+
                 return;
             }
 
@@ -67,6 +73,8 @@ public class boardController {
         }
     }
 
+
+
     /**
      * Handles the logic for selecting a piece.
      *
@@ -78,7 +86,10 @@ public class boardController {
         if (logicPiece.isRed() == model.isRedTurn()) {
             this.selectedEntity = pieceEntity;
             this.selectedEntity.getComponent(VisualStateComponent.class).setInactive(); // Darken the selected piece
+            showLegalMoves(logicPiece);
+
         }
+
     }
 
     /**
@@ -88,6 +99,8 @@ public class boardController {
         if (selectedEntity != null) {
             selectedEntity.getComponent(VisualStateComponent.class).setNormal();
             selectedEntity = null;
+            clearMoveIndicators();
+
         }
     }
 
@@ -264,6 +277,25 @@ public class boardController {
 
             updateTurnIndicator();
             deselectPiece();
+        }
+    }
+
+    private void clearMoveIndicators() {
+        getGameWorld().getEntitiesByType(EntityType.MOVE_INDICATOR)
+                .forEach(Entity::removeFromWorld);
+    }
+
+
+    private void showLegalMoves(AbstractPiece piece) {
+        // 先清理旧的
+        clearMoveIndicators();
+
+        // 获取所有合法走法
+        List<Point> moves = piece.getLegalMoves(model);
+
+        for (Point p : moves) {
+            Point2D pos = XiangQiApp.getVisualPosition(p.y, p.x);
+            spawn("MoveIndicator", pos);
         }
     }
 }

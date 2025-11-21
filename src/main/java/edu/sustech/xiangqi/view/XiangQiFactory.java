@@ -8,9 +8,14 @@ import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.Spawns;
 import com.almasb.fxgl.texture.Texture;
 import edu.sustech.xiangqi.EntityType;
+import edu.sustech.xiangqi.XiangQiApp;
 import edu.sustech.xiangqi.view.PieceComponent;
 import edu.sustech.xiangqi.view.VisualStateComponent;
 import edu.sustech.xiangqi.model.*;
+import javafx.scene.effect.Glow;
+import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 
 import static com.almasb.fxgl.dsl.FXGL.entityBuilder;
 import static edu.sustech.xiangqi.XiangQiApp.*;
@@ -46,10 +51,29 @@ public class XiangQiFactory implements EntityFactory {
                 .build();
     }
 
+    @Spawns("MoveIndicator")
+    public Entity newMoveIndicator(SpawnData data) {
+        // 稍微比格子小一点的半透明绿色圆点
+        Texture image = FXGL.getAssetLoader().loadTexture("选中.png");
+        int padding = 8;
+        image.setFitWidth(CELL_SIZE - padding);
+        image.setFitHeight(CELL_SIZE - padding);
+
+        // (可选但强烈推荐) 保持图片原始的长宽比，防止棋子被压扁或拉长
+
+        return entityBuilder(data)
+                .type(EntityType.MOVE_INDICATOR)
+                // 居中显示
+                .viewWithBBox(image)
+                .zIndex(100) // 保证显示在棋子上方
+                .build();
+    }
+
     @Spawns("background")
     public Entity newBackground(SpawnData data) {
         // 1. 加载背景图片
         Texture bgView = FXGL.getAssetLoader().loadTexture("背景.jpg");
+
 
 
         // 2. 强制将其尺寸拉伸到和整个窗口一样大
@@ -80,10 +104,7 @@ public class XiangQiFactory implements EntityFactory {
         // 3. 将图片加载为一个 Texture 对象，而不是直接传文件名
         Texture pieceView = FXGL.getAssetLoader().loadTexture(textureName);
 
-        // 4. 【！！！关键步骤！！！】
-        // 强制设置我们希望它显示的尺寸！
-        // 无论原始图片多大，最终都会以这个尺寸显示。
-        // 比格子稍微小一点会更好看，这里我们留出8像素的边距。
+
         int padding = 8;
         pieceView.setFitWidth(CELL_SIZE - padding);
         pieceView.setFitHeight(CELL_SIZE - padding);
@@ -91,11 +112,24 @@ public class XiangQiFactory implements EntityFactory {
         // (可选但强烈推荐) 保持图片原始的长宽比，防止棋子被压扁或拉长
         pieceView.setPreserveRatio(true);
 
+        // 4. 【！！！关键步骤！！！】
+        // 强制设置我们希望它显示的尺寸！
+        // 无论原始图片多大，最终都会以这个尺寸显示。
+        // 比格子稍微小一点会更好看，这里我们留出8像素的边距。
+
+        StackPane view = new StackPane(pieceView);
+        view.setPrefSize(CELL_SIZE - 8, CELL_SIZE - 8);
+
+
+
+
+        // (可选但强烈推荐) 保持图片原始的长宽比，防止棋子被压扁或拉长
+
         // 5. 使用 entityBuilder 构建实体
         return entityBuilder(data)
                 .type(EntityType.PIECE)
                 // 使用我们已经调整好尺寸的 pieceView 对象作为视图和碰撞盒
-                .viewWithBBox(pieceView)
+                .viewWithBBox(view)
                 .with(new PieceComponent(pieceLogic))
                 .with(new VisualStateComponent())
                 .collidable()
